@@ -1,6 +1,7 @@
 # ISIC_2018
 
 data: https://challenge.isic-archive.com/data/#2018
+kaggle: https://www.kaggle.com/code/ragaa5/resnet50-training-on-ham10000-transfer-learning#notebook-container
 ```
 Nguyễn Bá Thành
 ```
