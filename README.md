@@ -62,7 +62,7 @@ Chứa:
 | **Loss Function** | CrossEntropyLoss | Standard classification |
 | **Optimizer** | AdamW | Adaptive LR weight decay (1e-4) |
 | **Learning Rate** | 1e-4 | 0.0001 initial LR |
-| **Data Augmentation** | Resize, RandomResizedCrop, Flip, Rotation, ColorJitter, Normalize | Tăng cường dữ liệu |
+| **Data Augmentation** | Resize, Crop, Flip, Rotation, Normalize | Tăng cường dữ liệu |
 | **Class Imbalance** | WeightedRandomSampler | Cân bằng tỉ lệ các class (ratio ~58:1) |
 
 
