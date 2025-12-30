@@ -1,231 +1,178 @@
 # ISIC 2018 Skin Lesion Classification
 
+**Thành viên: Nguyễn Bá Thành**
+
 Dự án classification các tổn thương da sử dụng EfficientNet-B1 trên dataset ISIC 2018.
+
+---
 
 ## 📁 Cấu trúc Project
 
 ```
 ISIC2018/
-├── config.py              # Cấu hình và hyperparameters
-├── data_processing.py     # Xử lý dữ liệu và label mapping
-├── dataset.py             # PyTorch Dataset class
-├── transforms.py          # Data augmentation
-├── model.py               # Model architecture (EfficientNet-B1)
-├── train.py               # Training utilities
-├── evaluate.py            # Evaluation và metrics
+├── scr/                   # Source code modules
+│   ├── __init__.py        # Package initializer
+│   ├── config.py          # Cấu hình và hyperparameters
+│   ├── data_processing.py # Xử lý dữ liệu và label mapping
+│   ├── dataset.py         # PyTorch Dataset class
+│   ├── transforms.py      # Data augmentation
+│   ├── model.py           # Model architecture (EfficientNet-B1)
+│   ├── train.py           # Training utilities
+│   └── evaluate.py        # Evaluation và metrics
 ├── main.ipynb             # Notebook chính (đã được refactor)
 ├── outputs/               # Thư mục outputs
-│   ├── models/            # Model checkpoints
-│   ├── figures/           # Visualizations
+│   ├── models/            # Model checkpoints (.pt files)
+│   ├── figures/           # Visualizations (confusion matrix, history)
 │   └── submissions/       # Prediction CSVs
 ├── GroundTruth/           # Ground truth CSVs (không push lên git)
-└── Input/                 # Ảnh training/val/test (không push lên git)
+├── Input/                 # Ảnh training/val/test (không push lên git)
+├── requirements.txt       # Python dependencies
+└── README.md             # Documentation
 ```
 
-## 🔧 Cài đặt
+---
 
-### Requirements
+## 🚀 Chạy Training
 
-```bash
-pip install -r requirements.txt
-```
+### Bước 1: Mở notebook
+Mở file `main.ipynb` trong Jupyter hoặc VS Code
 
-### Dependencies chính:
-- PyTorch
-- timm (EfficientNet models)
-- scikit-learn
-- pandas
-- matplotlib
-- seaborn
-- Pillow
-
-## 🚀 Sử dụng
-
-### 1. Chuẩn bị dữ liệu
-
-Đảm bảo các folder sau tồn tại và chứa đúng dữ liệu:
-- `GroundTruth/Training_GrounTruth/` - Training labels
-- `GroundTruth/Validation_GroundTruth/` - Validation labels  
-- `GroundTruth/Test_GroundTruth/` - Test labels
-- `Input/Training_Input/` - Training images
-- `Input/Validation_Input/` - Validation images
-- `Input/Test_Input/` - Test images
-
-### 2. Chạy training
-
-Mở và chạy `main.ipynb` trong Jupyter hoặc VS Code:
-
+### Bước 2: Chạy tuần tự các cells
 ```python
-# Cell 1: Import modules
-# Cell 2: Load data
-# Cell 3: Initialize model
+# Cell 1: Import modules và cấu hình
+# Cell 2: Load và chuẩn bị dữ liệu
+# Cell 3: Khởi tạo model
 # Cell 4: Training loop
 # Cell 5-8: Evaluation và visualization
 ```
 
-### 3. Test các module riêng lẻ
+### Kết quả sau training:
+- Model checkpoint: `outputs/models/efficientnet_b1_isic2018.pt`
+- Confusion matrices: `outputs/figures/val_confusion_matrix.png`
+- Training history: `outputs/figures/training_history.png`
+- Predictions: `outputs/submissions/test_predictions.csv`
 
-```bash
-# Test config
-python config.py
+---
 
-# Test data processing
-python data_processing.py
-
-# Test model
-python model.py
-
-# Test training utilities
-python train.py
-```
-
-## 📊 Model Architecture
+## 🎯 Model Architecture
 
 **EfficientNet-B1**
-- Input size: 240x240
-- Parameters: ~6.5M (giảm 40% so với B3)
-- Pretrained: ImageNet
+- **Input size**: 224×224 pixels
+- **Parameters**: ~6.5M (trainable)
+- **Pretrained**: ImageNet weights
+- **Output**: 7 classes (skin lesion types)
 
-### Thay đổi từ phiên bản trước:
-- ✅ Đổi từ EfficientNet-**B3** → **B1**
-- ✅ Image size: ~~300~~ → **240**
-- ✅ Checkpoint: `efficientnet_b1_isic2018.pt`
-- ⚡ Training nhanh hơn ~30-40%
-- 💾 Sử dụng ít memory hơn
 
-## 🎯 Training Configuration
+---
 
-Các hyperparameters chính trong `config.py`:
+## ⚙️ Training Configuration
 
-```python
-MODEL_NAME = 'efficientnet_b1'
-IMG_SIZE = 240
-BATCH_SIZE = 16  # (8 nếu CPU)
-LEARNING_RATE = 3e-4
-NUM_EPOCHS = 15
-EARLY_STOP_PATIENCE = 3
-```
+### Hyperparameters chính:
 
-## 📈 Evaluation Metrics
+| Parameter | Value | Mô tả |
+|-----------|-------|-------|
+| **Model** | EfficientNet-B1 | Pretrained trên ImageNet |
+| **Input Size** | 224×224 | Reduced từ 240 để train nhanh hơn |
+| **Batch Size** | 16 (CPU) / 64 (GPU) | Tối ưu cho CPU training |
+| **Learning Rate** | 1e-4 (0.0001) | AdamW optimizer |
+| **Weight Decay** | 1e-4 | L2 regularization |
+| **Epochs** | 10 | Giảm từ 15 để train nhanh |
+| **Validation** | Every 3 epochs | Giảm overhead |
+| **Early Stopping** | Patience = 2 | Dừng sớm nếu không cải thiện |
 
-- Accuracy
-- Macro F1 Score
-- Balanced Accuracy
-- Confusion Matrix
-- Per-class Precision/Recall
+### Loss Function
+**CrossEntropyLoss**
+- Standard loss cho multi-class classification
+- Tính softmax probability cho 7 classes
+- Không sử dụng label smoothing (để train nhanh hơn)
 
-## 💾 Checkpoints
+### Optimizer
+**AdamW (Adam with Weight Decay)**
+- Adaptive learning rate cho từng parameter
+- Weight decay = 1e-4 để tránh overfitting
+- Beta1 = 0.9, Beta2 = 0.999 (PyTorch defaults)
 
-Model checkpoints được lưu tại `outputs/models/efficientnet_b1_isic2018.pt` và bao gồm:
-- Model weights
-- Optimizer state
-- Training history
-- Best validation F1
-- Label mappings
+### Learning Rate Scheduler
+**CosineAnnealingLR**
+- Giảm learning rate theo hàm cosine
+- T_max = 10 epochs
+- Eta_min = 1e-6 (LR tối thiểu)
+- Giúp model converge tốt hơn cuối training
 
-## 📝 Outputs
+### Data Augmentation (Training)
+- **Resize**: 224 → 258 pixels
+- **RandomResizedCrop**: 224×224, scale=(0.8, 1.0)
+- **RandomHorizontalFlip**: p=0.5
+- **RandomVerticalFlip**: p=0.5
+- **RandomRotation**: ±20 degrees
+- **ColorJitter**: brightness, contrast, saturation, hue
+- **Normalization**: ImageNet mean/std
 
-Sau khi training, các file sau được tạo:
+### Class Imbalance Handling
+**WeightedRandomSampler**
+- Dataset có imbalance ratio: ~58:1 (NV vs DF)
+- Sử dụng weighted sampling để balance classes
+- Đảm bảo mỗi class được sample đều trong training
 
-### Models
-- `outputs/models/efficientnet_b1_isic2018.pt` - Best model checkpoint
+---
 
-### Figures
-- `outputs/figures/val_confusion_matrix.png` - Validation confusion matrix
-- `outputs/figures/test_confusion_matrix.png` - Test confusion matrix
-- `outputs/figures/training_history.png` - Training curves
-- `outputs/figures/inference_demo.png` - Sample predictions
+## 📊 Training Outputs
 
-### Submissions
-- `outputs/submissions/test_predictions.csv` - Test predictions với probabilities
+### Model Checkpoint (`.pt` file)
+Chứa:
+- Model weights (`model_state_dict`)
+- Optimizer state (`optimizer_state_dict`)
+- Training history (loss, accuracy, F1 score)
+- Best validation F1 score
+- Label mappings (label2idx, idx2label)
+- Epoch information
 
-## 🔍 Module Details
+### Metrics được track:
+- **Loss**: Training và validation loss
+- **Accuracy**: Overall accuracy
+- **Macro F1 Score**: F1 trung bình của 7 classes
+- **Balanced Accuracy**: Accuracy có weight theo class
+- **Learning Rate**: LR qua các epochs
 
-### `config.py`
-- Centralized configuration
-- Device setup
-- Paths và hyperparameters
-- Seed cho reproducibility
+---
 
-### `data_processing.py`
-- Parse ground truth CSVs
-- Tạo label mappings
-- Phân tích class imbalance
-- Load tất cả datasets
+## 📝 Dataset
 
-### `dataset.py`
-- PyTorch Dataset class `ISICDataset`
-- Load và transform images
-- Return (image, label, image_id)
+**ISIC 2018 Task 3: Lesion Diagnosis**
+- **Training**: 10,015 images
+- **Validation**: 193 images  
+- **Test**: 1,512 images
 
-### `transforms.py`
-- Training augmentation (random crop, flip, rotation, color jitter)
-- Validation preprocessing (resize, center crop)
-- ImageNet normalization
+**Class Distribution** (highly imbalanced):
+- NV (Nevi): ~67% - Đa số
+- MEL (Melanoma): ~11%
+- BKL: ~11%
+- BCC: ~5%
+- AKIEC: ~3%
+- DF: ~1% - Ít nhất
+- VASC: ~1.5%
 
-### `model.py`
-- Build EfficientNet-B1 từ timm
-- Count parameters
-- Load/save checkpoints
+**Imbalance Ratio**: 58.3:1 (max:min)  
+→ **Sử dụng WeightedRandomSampler** để cân bằng
 
-### `train.py`
-- Training loop cho 1 epoch
-- WeightedRandomSampler cho imbalanced data
-- Optimizer, scheduler, criterion setup
-- DataLoader creation
+---
 
-### `evaluate.py`
-- Evaluation trên val/test sets
-- Confusion matrix plotting
-- Classification report
-- Create submission CSV
-- Single image inference
+## 💾 File Quan Trọng
 
-## 📚 Usage Examples
+### Configuration
+- `scr/config.py` - Tất cả hyperparameters và paths
 
-### Load và sử dụng trained model
+### Training
+- `main.ipynb` - Notebook chính
+- `scr/train.py` - Training loop utilities
+- `scr/model.py` - Model architecture
 
-```python
-from config import *
-from model import build_model, load_checkpoint
-from transforms import get_val_transform
-from evaluate import predict_single_image
+### Data
+- `scr/data_processing.py` - Load và parse data
+- `scr/dataset.py` - PyTorch Dataset
+- `scr/transforms.py` - Data augmentation
 
-# Load model
-model = build_model(num_classes=7)
-model = model.to(DEVICE)
-checkpoint = load_checkpoint(model, None, MODEL_PATH, DEVICE)
+### Checkpoints
+- `outputs/models/efficientnet_b1_isic2018.pt` - Best model
 
-# Predict single image
-image_path = "path/to/image.jpg"
-transform = get_val_transform()
-idx2label = checkpoint['idx2label']
-
-image, top_labels, top_probs = predict_single_image(
-    model, image_path, transform, DEVICE, idx2label, top_k=3
-)
-
-print("Top 3 predictions:")
-for i, (label, prob) in enumerate(zip(top_labels, top_probs)):
-    print(f"{i+1}. {label}: {prob:.4f}")
-```
-
-## ⚠️ Lưu ý
-
-1. **Không push dữ liệu lên GitHub**: Folders `GroundTruth/` và `Input/` đã được thêm vào `.gitignore`
-
-2. **Checkpoint cũ không tương thích**: Nếu có checkpoint từ EfficientNet-B3, cần train lại với B1
-
-3. **Memory**: Nếu bị out of memory, giảm `BATCH_SIZE` trong `config.py`
-
-4. **Windows**: `NUM_WORKERS = 0` để tránh lỗi multiprocessing
-
-## 🎓 Dataset
-
-ISIC 2018 Task 3: Lesion Diagnosis
-- 7 classes: MEL, NV, BCC, AKIEC, BKL, DF, VASC
-- Highly imbalanced (sử dụng WeightedRandomSampler)
-
-## 📄 License
-
-Dự án học tập - ISIC 2018 Challenge
+---

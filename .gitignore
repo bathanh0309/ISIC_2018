@@ -35,3 +35,4 @@ env/
 # Large Data Folders (Download separately) - Not pushed to GitHub
 GroundTruth/
 Input/
+deploy.bat
