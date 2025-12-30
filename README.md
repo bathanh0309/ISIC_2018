@@ -1,4 +1,4 @@
-# Mô hình Efficient Net / Pytorch để phân loại bệnh da
+## Mô hình Efficient Net / Pytorch để phân loại bệnh da
 
 data: https://challenge.isic-archive.com/data/#2018
 
