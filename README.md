@@ -6,7 +6,7 @@ Dự án classification các tổn thương da sử dụng EfficientNet-B1 trên
 
 ---
 
-## 📁 Cấu trúc Project
+## Cấu trúc Project
 
 ```
 ISIC2018/
@@ -30,9 +30,12 @@ ISIC2018/
 └── README.md             # Documentation
 ```
 
+![Dataset Overview](outputs/figures/dataset_overview.png)
+![Class Distribution Comparison](outputs/figures/class_distribution_comparison.png)
+
 ---
 
-## 🚀 Chạy Training
+## Chạy Training
 
 ### Bước 1: Mở notebook
 Mở file `main.ipynb` trong Jupyter hoặc VS Code
@@ -54,7 +57,7 @@ Mở file `main.ipynb` trong Jupyter hoặc VS Code
 
 ---
 
-## 🎯 Model Architecture
+## Model Architecture
 
 **EfficientNet-B1**
 - **Input size**: 224×224 pixels
@@ -65,7 +68,7 @@ Mở file `main.ipynb` trong Jupyter hoặc VS Code
 
 ---
 
-## ⚙️ Training Configuration
+## Training Configuration
 
 ### Hyperparameters chính:
 
@@ -116,7 +119,7 @@ Mở file `main.ipynb` trong Jupyter hoặc VS Code
 
 ---
 
-## 📊 Training Outputs
+## Training Outputs
 
 ### Model Checkpoint (`.pt` file)
 Chứa:
@@ -136,7 +139,7 @@ Chứa:
 
 ---
 
-## 📝 Dataset
+## Dataset
 
 **ISIC 2018 Task 3: Lesion Diagnosis**
 - **Training**: 10,015 images
@@ -157,7 +160,7 @@ Chứa:
 
 ---
 
-## 💾 File Quan Trọng
+## File Quan Trọng
 
 ### Configuration
 - `scr/config.py` - Tất cả hyperparameters và paths
