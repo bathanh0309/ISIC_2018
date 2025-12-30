@@ -18,7 +18,8 @@ def get_train_transform():
             hue=0.05  # Reduced from 0.1 to avoid extreme color shifts
         ),
         T.ToTensor(),
-        T.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
+        T.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
+        T.RandomErasing(p=0.2, scale=(0.02, 0.33), ratio=(0.3, 3.3), value='random')
     ])
     
     return transform

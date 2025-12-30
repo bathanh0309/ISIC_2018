@@ -78,10 +78,10 @@ def check_class_imbalance(df_train: pd.DataFrame, threshold: float = 3.0) -> Tup
     use_weighted_sampler = imbalance_ratio > threshold
     
     if use_weighted_sampler:
-        print(f"⚠ High class imbalance detected (ratio > {threshold}).")
+        print(f"High class imbalance detected (ratio > {threshold}).")
         print("   Will use WeightedRandomSampler for balanced training.")
     else:
-        print(f"✓ Class distribution is balanced (ratio <= {threshold}).")
+        print(f"Class distribution is balanced (ratio <= {threshold}).")
         print("   Will use standard random sampling.")
     
     return use_weighted_sampler, imbalance_ratio

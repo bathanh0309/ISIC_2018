@@ -42,25 +42,32 @@ IMAGENET_STD = [0.229, 0.224, 0.225]
 # ========================
 # Optimizer
 LEARNING_RATE = 1e-4
-WEIGHT_DECAY = 1e-4
+# WEIGHT_DECAY = 1e-4  # Old value
+WEIGHT_DECAY = 1e-3  # Increased to reduce overfitting
+
+# Dropout (New parameters)
+DROP_RATE = 0.3       # Dropout rate for classifier 
+DROP_PATH_RATE = 0.2  # Stochastic depth rate
 
 # Training
-NUM_EPOCHS = 20  # Reduced for faster training
-BATCH_SIZE = 64 if torch.cuda.is_available() else 64  # Increased to 32 for faster training
-NUM_WORKERS = 0  # Set to 0 for Windows to avoid issues
-VAL_EVERY_N_EPOCHS = 2  # Validate every 2 epochs
+# NUM_EPOCHS = 20  # Old value
+NUM_EPOCHS = 5     # Train for 5 additional epochs
+BATCH_SIZE = 64 if torch.cuda.is_available() else 64
+NUM_WORKERS = 0
+VAL_EVERY_N_EPOCHS = 1  # Validate every epoch for fine-tuning
 
 # Loss function
-USE_LABEL_SMOOTHING = False
+# USE_LABEL_SMOOTHING = False # Old value
+USE_LABEL_SMOOTHING = True    # Enabled to reduce overfitting
 LABEL_SMOOTHING = 0.1
 
 # Learning rate scheduler
-USE_COSINE_SCHEDULER = True  # True: CosineAnnealingLR, False: ReduceLROnPlateau
+USE_COSINE_SCHEDULER = True
 
 # Early stopping
-EARLY_STOP_PATIENCE = 3  # Reduced patience for faster stopping
-MONITOR_METRIC = 'val_f1'  # Metric to monitor for best model
-SAVE_EVERY_N_EPOCHS = 1  # Save checkpoint every 1 epochs
+EARLY_STOP_PATIENCE = 3
+MONITOR_METRIC = 'val_f1'
+SAVE_EVERY_N_EPOCHS = 1
 
 
 # ========================

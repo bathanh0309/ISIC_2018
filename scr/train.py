@@ -54,7 +54,7 @@ def create_weighted_sampler(df, label_col: str = 'label_idx'):
     sample_weights = [class_weights[label] for label in df[label_col]]
     sampler = WeightedRandomSampler(sample_weights, len(sample_weights))
     
-    print("✓ Created WeightedRandomSampler for balanced training")
+    print("Created WeightedRandomSampler for balanced training")
     return sampler
 
 
@@ -65,7 +65,7 @@ def get_optimizer(model: nn.Module, lr: float = 3e-4, weight_decay: float = 1e-4
         lr=lr,
         weight_decay=weight_decay
     )
-    print(f"✓ Optimizer: AdamW (lr={lr}, weight_decay={weight_decay})")
+    print(f"Optimizer: AdamW (lr={lr}, weight_decay={weight_decay})")
     return optimizer
 
 
@@ -76,12 +76,12 @@ def get_scheduler(optimizer: torch.optim.Optimizer, num_epochs: int,
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             optimizer, T_max=num_epochs, eta_min=1e-6
         )
-        print(f"✓ Scheduler: CosineAnnealingLR (T_max={num_epochs})")
+        print(f"Scheduler: CosineAnnealingLR (T_max={num_epochs})")
     else:
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             optimizer, mode='max', factor=0.5, patience=2, verbose=True
         )
-        print("✓ Scheduler: ReduceLROnPlateau (mode=max, factor=0.5, patience=2)")
+        print("Scheduler: ReduceLROnPlateau (mode=max, factor=0.5, patience=2)")
     
     return scheduler
 
@@ -90,10 +90,10 @@ def get_criterion(use_label_smoothing: bool = False, label_smoothing: float = 0.
 
     if use_label_smoothing:
         criterion = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
-        print(f"✓ Loss: CrossEntropyLoss with label smoothing ({label_smoothing})")
+        print(f"Loss: CrossEntropyLoss with label smoothing ({label_smoothing})")
     else:
         criterion = nn.CrossEntropyLoss()
-        print("✓ Loss: CrossEntropyLoss")
+        print("Loss: CrossEntropyLoss")
     
     return criterion
 

@@ -24,7 +24,7 @@ ISIC2018/
 ├── GroundTruth/           # Ground truth CSVs (không push lên git)
 ├── Input/                 # Ảnh training/val/test (không push lên git)
 ├── requirements.txt       # Python dependencies
-└── README.md             # Documentation
+└── README.md              # Documentation
 ```
 
 ![Dataset Overview](outputs/figures/dataset_overview.png)
