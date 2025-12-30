@@ -45,10 +45,10 @@ LEARNING_RATE = 1e-4
 WEIGHT_DECAY = 1e-4
 
 # Training
-NUM_EPOCHS = 10  # Reduced for faster training
-BATCH_SIZE = 64 if torch.cuda.is_available() else 16  # Increased to 32 for faster training
+NUM_EPOCHS = 20  # Reduced for faster training
+BATCH_SIZE = 64 if torch.cuda.is_available() else 64  # Increased to 32 for faster training
 NUM_WORKERS = 0  # Set to 0 for Windows to avoid issues
-VAL_EVERY_N_EPOCHS = 3  # Validate every 3 epochs
+VAL_EVERY_N_EPOCHS = 2  # Validate every 2 epochs
 
 # Loss function
 USE_LABEL_SMOOTHING = False
@@ -58,7 +58,7 @@ LABEL_SMOOTHING = 0.1
 USE_COSINE_SCHEDULER = True  # True: CosineAnnealingLR, False: ReduceLROnPlateau
 
 # Early stopping
-EARLY_STOP_PATIENCE = 2  # Reduced patience for faster stopping
+EARLY_STOP_PATIENCE = 3  # Reduced patience for faster stopping
 MONITOR_METRIC = 'val_f1'  # Metric to monitor for best model
 SAVE_EVERY_N_EPOCHS = 1  # Save checkpoint every 1 epochs
 

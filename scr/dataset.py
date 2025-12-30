@@ -1,6 +1,3 @@
-"""
-PyTorch Dataset class for ISIC 2018 Skin Lesion Classification
-"""
 
 import os
 import torch
@@ -10,14 +7,7 @@ from typing import Optional, Tuple
 
 
 class ISICDataset(Dataset):
-    """
-    ISIC 2018 Dataset for skin lesion classification.
-    
-    Args:
-        df: DataFrame with columns: image_id, label, image_path, label_idx
-        transform: Optional transform to apply to images
-    """
-    
+
     def __init__(self, df, transform=None):
         self.df = df.reset_index(drop=True)
         self.transform = transform
@@ -26,15 +16,7 @@ class ISICDataset(Dataset):
         return len(self.df)
     
     def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor, str]:
-        """
-        Get a single item from the dataset.
-        
-        Args:
-            idx: Index of the item
-            
-        Returns:
-            Tuple of (image_tensor, label_tensor, image_id)
-        """
+
         row = self.df.iloc[idx]
         image_path = row['image_path']
         label = row['label_idx']
