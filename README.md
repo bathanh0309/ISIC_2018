@@ -81,5 +81,10 @@ Chứa:
 ## Training History & Evaluation
 
 ![Training History](outputs/figures/training_history.png)
+
+### Phân tích quá trình huấn luyện:
+- **Giai đoạn Epoch 1 - 8**: Huấn luyện ban đầu. Mô hình hội tụ nhanh nhưng có dấu hiệu overfitting nhẹ; Validation Accuracy đi ngang ở mức ~78% và F1 Score đạt ~0.72.
+- **Giai đoạn Epoch 8 - 13**: Áp dụng Regularization (Label Smoothing, Dropout) và RandomErasing. Validation Loss giảm ổn định hơn, F1 Score và Balanced Accuracy cải thiện rõ rệt, cho thấy sự cải thiện về khả năng tổng quát hóa của mô hình.
+
 ![Validation Confusion Matrix](outputs/figures/val_confusion_matrix.png)
 ![Test Confusion Matrix](outputs/figures/test_confusion_matrix.png)
