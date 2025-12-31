@@ -10,7 +10,7 @@ Dự án classification các tổn thương da sử dụng EfficientNet-B1 trên
 
 ```
 ISIC2018/
-├── scr/                   # Source code modules
+├── src/                   # Source code modules
 │   ├── __init__.py        # Package initializer
 │   ├── config.py          # Cấu hình và hyperparameters
 │   ├── data_processing.py # Xử lý dữ liệu và label mapping
