@@ -1,4 +1,3 @@
-# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -19,22 +18,12 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-
-# Virtual Environment
 .venv/
 venv/
 ENV/
 env/
-
-# Jupyter Notebook
 .ipynb_checkpoints
-
-# VS Code
 .vscode/
-
-# Large Data Folders (Download separately) - Not pushed to GitHub
 GroundTruth/
 Input/
-
-# Local Scripts
 deploy.bat
