@@ -61,6 +61,10 @@ VAL_EVERY_N_EPOCHS = 1  # Validate every epoch for fine-tuning
 USE_LABEL_SMOOTHING = True    # Enabled to reduce overfitting
 LABEL_SMOOTHING = 0.1
 
+# Test-Time Augmentation (TTA)
+USE_TTA_VALIDATION = False  # Set True to use TTA during val (slower)
+USE_TTA_TEST = True         # Set True for final test results (better metrics)
+
 # Learning rate scheduler
 USE_COSINE_SCHEDULER = True
 

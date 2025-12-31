@@ -36,33 +36,18 @@ ISIC2018/
 
 Model mới train được lưu tại:
 `outputs/models/efficientnet_b1_isic2018.pt`
-
-### Model Checkpoint (.pt file)
-Chứa:
-- Model weights (model_state_dict)
-- Optimizer state (optimizer_state_dict)
-- Training history (loss, accuracy, F1 score)
-- Best validation F1 score
-- Label mappings (label2idx, idx2label)
-- Epoch information
-
-### Metrics được track:
-- **Loss**: Training và validation loss
-- **Accuracy**: Overall accuracy
-- **Macro F1 Score**: F1 trung bình của 7 classes
-- **Balanced Accuracy**: Accuracy có weight theo class
-- **Learning Rate**: LR qua các epochs
-
 ---
 
 ## Training Configuration
 
 | Parameter | Value | Mô tả |
 |-----------|-------|-------|
-| **Loss Function** | CrossEntropyLoss | Standard classification |
-| **Optimizer** | AdamW | Adaptive LR weight decay (1e-4) |
+| **Loss Function** | CrossEntropyLoss | With Label Smoothing (0.1) |
+| **Optimizer** | AdamW | Weight Decay (1e-3) |
 | **Learning Rate** | 1e-4 | 0.0001 initial LR |
-| **Data Augmentation** | Resize, Crop, Flip, Rotation, Normalize | Tăng cường dữ liệu |
+| **Dropout** | 0.3 | Dropout rate for classifier head |
+| **Drop Path** | 0.2 | Stochastic depth rate |
+| **Data Augmentation** | Resize, Crop, Flip, Rotation, ColorJitter, RandomErasing | Thêm data  |
 | **Class Imbalance** | WeightedRandomSampler | Cân bằng tỉ lệ các class (ratio ~58:1) |
 
 
@@ -83,8 +68,10 @@ Chứa:
 ![Training History](outputs/figures/training_history.png)
 
 ### Phân tích quá trình huấn luyện:
-- **Giai đoạn Epoch 1 - 8**: Huấn luyện ban đầu. Mô hình hội tụ nhanh nhưng có dấu hiệu overfitting nhẹ; Validation Accuracy đi ngang ở mức ~78% và F1 Score đạt ~0.72.
-- **Giai đoạn Epoch 8 - 13**: Áp dụng Regularization (Label Smoothing, Dropout) và RandomErasing. Validation Loss giảm ổn định hơn, F1 Score và Balanced Accuracy cải thiện rõ rệt, cho thấy sự cải thiện về khả năng tổng quát hóa của mô hình.
+- **Giai đoạn Epoch 1 - 8**: Mô hình hội tụ nhanh nhưng có dấu hiệu overfitting nhẹ; Validation Accuracy đi ngang ở mức ~78% và F1 Score đạt ~0.72.
+- **Giai đoạn Epoch 8 - 13**: Áp dụng Regularization (Label Smoothing, Dropout) và RandomErasing. Validation Loss giảm ổn định, F1 Score và Balanced Accuracy cải thiện rõ rệt, cho thấy sự cải thiện về khả năng tổng quát hóa của mô hình.
+- **Giai đoạn Epoch 13 - 16**: Thực hiện **Fine-tuning** với Learning Rate thấp (1e-5) kết hợp kỹ thuật **Test-Time Augmentation (TTA)**. Phương pháp này giúp tinh chỉnh các trọng số mô hình ở mức độ chi tiết hơn và giảm thiểu sai số dự đoán thông qua việc lấy trung bình đa góc nhìn từ ảnh (TTA).
+- **Tại sao Epoch 11 là Best Epoch?**: Tại epoch 11, mô hình đạt được điểm cân bằng tối ưu (Best Fit) khi F1-score trên tập Validation đạt giá trị cao nhất. Sau epoch này, dù Training Loss tiếp tục giảm nhưng hiệu suất trên tập Validation bắt đầu bão hòa hoặc dao động nhẹ, cho thấy mô hình đã học đủ sâu và bắt đầu tiệm cận ngưỡng giới hạn của kiến trúc hiện tại trên CPU.
 
 ![Validation Confusion Matrix](outputs/figures/val_confusion_matrix.png)
 ![Test Confusion Matrix](outputs/figures/test_confusion_matrix.png)

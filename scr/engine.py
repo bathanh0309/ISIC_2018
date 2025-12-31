@@ -69,7 +69,8 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, scheduler
         
         if should_validate:
             print(" Running validation...")
-            val_loss, val_acc, val_f1, val_bal_acc, _, _, _, _ = evaluate(model, val_loader, criterion, device)
+            use_tta_val = config_dict.get('USE_TTA_VALIDATION', False)
+            val_loss, val_acc, val_f1, val_bal_acc, _, _, _, _ = evaluate(model, val_loader, criterion, device, use_tta=use_tta_val)
             print(f" Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.4f} | Val F1: {val_f1:.4f}")
             
             # Check for best model

@@ -17,7 +17,7 @@ from typing import Tuple, List, Dict
 
 
 def evaluate(model: nn.Module, loader: DataLoader, criterion: nn.Module, 
-            device: torch.device) -> Tuple:
+            device: torch.device, use_tta: bool = False) -> Tuple:
 
     model.eval()
     running_loss = 0.0
@@ -31,13 +31,34 @@ def evaluate(model: nn.Module, loader: DataLoader, criterion: nn.Module,
             images = images.to(device)
             labels = labels.to(device)
             
-            outputs = model(images)
-            loss = criterion(outputs, labels)
+            if use_tta:
+                # Basic TTA: Original + Horizontal Flip + Vertical Flip
+                # 1. Original
+                outputs = model(images)
+                
+                # 2. Horizontal Flip
+                outputs_hf = model(torch.flip(images, dims=[3]))
+                
+                # 3. Vertical Flip
+                outputs_vf = model(torch.flip(images, dims=[2]))
+                
+                # Average probabilities
+                probs = (F.softmax(outputs, dim=1) + 
+                         F.softmax(outputs_hf, dim=1) + 
+                         F.softmax(outputs_vf, dim=1)) / 3.0
+                
+                # For loss calculation, use original outputs
+                loss = criterion(outputs, labels)
+                
+                probs = probs.cpu().numpy()
+                preds = np.argmax(probs, axis=1)
+            else:
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+                probs = F.softmax(outputs, dim=1).cpu().numpy()
+                preds = outputs.argmax(dim=1).cpu().numpy()
             
             running_loss += loss.item() * images.size(0)
-            probs = F.softmax(outputs, dim=1).cpu().numpy()
-            preds = outputs.argmax(dim=1).cpu().numpy()
-            
             all_probs.extend(probs)
             all_preds.extend(preds)
             all_labels.extend(labels.cpu().numpy())
@@ -114,7 +135,7 @@ def create_submission(image_ids: List[str], preds: List[int], probs: List[np.nda
 
 def predict_single_image(model: nn.Module, image_path: str, transform,
                         device: torch.device, idx2label: Dict, 
-                        top_k: int = 3) -> Tuple:
+                        top_k: int = 3, use_tta: bool = False) -> Tuple:
 
     model.eval()
     
@@ -124,8 +145,23 @@ def predict_single_image(model: nn.Module, image_path: str, transform,
     
     # Predict
     with torch.no_grad():
-        outputs = model(image_tensor)
-        probs = F.softmax(outputs, dim=1).cpu().numpy()[0]
+        if use_tta:
+            # Original
+            outputs = model(image_tensor)
+            probs = F.softmax(outputs, dim=1)
+            
+            # Horizontal Flip
+            outputs_hf = model(torch.flip(image_tensor, dims=[3]))
+            probs += F.softmax(outputs_hf, dim=1)
+            
+            # Vertical Flip
+            outputs_vf = model(torch.flip(image_tensor, dims=[2]))
+            probs += F.softmax(outputs_vf, dim=1)
+            
+            probs = (probs / 3.0).cpu().numpy()[0]
+        else:
+            outputs = model(image_tensor)
+            probs = F.softmax(outputs, dim=1).cpu().numpy()[0]
     
     # Get top-k predictions
     top_k_indices = np.argsort(probs)[::-1][:top_k]
