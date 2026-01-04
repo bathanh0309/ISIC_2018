@@ -1,6 +1,13 @@
+"""
+Configuration for ISIC 2018 Task 3 Classification.
+Supports both Windows local and Codespaces (Linux) environments.
+"""
 
 import os
 import random
+from pathlib import Path
+from typing import Optional, List
+
 import numpy as np
 import torch
 
@@ -75,26 +82,104 @@ SAVE_EVERY_N_EPOCHS = 1
 
 
 # ========================
-# DATA PATHS
+# AUTO-DETECT DATA PATHS
 # ========================
-# Ground Truth CSV files
-PATH_TRAIN_CSV = r"D:\ISIC2018\GroundTruth\Training_GrounTruth\ISIC2018_Task3_Training_GroundTruth.csv"
-PATH_VAL_CSV = r"D:\ISIC2018\GroundTruth\Validation_GroundTruth\ISIC2018_Task3_Validation_GroundTruth.csv"
-PATH_TEST_CSV = r"D:\ISIC2018\GroundTruth\Test_GroundTruth\ISIC2018_Task3_Test_GroundTruth.csv"
+# Compute REPO_ROOT from this file's location
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
-# Image directories
-DIR_TRAIN_IMG = r"D:\ISIC2018\Input\Training_Input"
-DIR_VAL_IMG = r"D:\ISIC2018\Input\Validation_Input"
-DIR_TEST_IMG = r"D:\ISIC2018\Input\Test_Input"
+# DATA_ROOT can be overridden via environment variable
+# Default: REPO_ROOT/data/ISIC2018
+DATA_ROOT = Path(os.getenv("ISIC2018_DATA_ROOT", REPO_ROOT / "data" / "ISIC2018"))
+
+
+def find_file(directory: Path, patterns: List[str]) -> Optional[Path]:
+    """Find first file matching any of the patterns in directory (recursive)."""
+    if not directory.exists():
+        return None
+    for pattern in patterns:
+        matches = list(directory.rglob(pattern))
+        if matches:
+            return matches[0]
+    return None
+
+
+def find_dir_with_images(directory: Path, patterns: List[str], img_ext: str = "*.jpg") -> Optional[Path]:
+    """Find first directory matching patterns that contains image files."""
+    if not directory.exists():
+        return None
+    for pattern in patterns:
+        # Try exact pattern match
+        for subdir in directory.rglob(pattern):
+            if subdir.is_dir() and list(subdir.glob(img_ext)):
+                return subdir
+    return None
+
+
+# Try to find CSV files (Ground Truth)
+_csv_patterns_train = ["*Task3*Training*GroundTruth*.csv", "*Training*Ground*.csv", "Training*.csv"]
+_csv_patterns_val = ["*Task3*Validation*GroundTruth*.csv", "*Validation*Ground*.csv", "Validation*.csv"]
+_csv_patterns_test = ["*Task3*Test*GroundTruth*.csv", "*Test*Ground*.csv", "Test*.csv"]
+
+# Try to find image directories
+_img_dir_patterns_train = ["*Training*Input*", "Training_Input", "*Task3*Training*Input*"]
+_img_dir_patterns_val = ["*Validation*Input*", "Validation_Input", "*Task3*Validation*Input*"]
+_img_dir_patterns_test = ["*Test*Input*", "Test_Input", "*Task3*Test*Input*"]
+
+
+def _auto_detect_csv(patterns: List[str], fallback: str) -> str:
+    """Auto-detect CSV path or return fallback."""
+    found = find_file(DATA_ROOT, patterns)
+    if found:
+        return str(found)
+    # Try REPO_ROOT as well (for backward compatibility)
+    found = find_file(REPO_ROOT, patterns)
+    if found:
+        return str(found)
+    return fallback
+
+
+def _auto_detect_img_dir(patterns: List[str], fallback: str) -> str:
+    """Auto-detect image directory or return fallback."""
+    found = find_dir_with_images(DATA_ROOT, patterns)
+    if found:
+        return str(found)
+    # Try REPO_ROOT as well
+    found = find_dir_with_images(REPO_ROOT, patterns)
+    if found:
+        return str(found)
+    return fallback
+
+
+# ========================
+# DATA PATHS (Auto-detected)
+# ========================
+PATH_TRAIN_CSV = _auto_detect_csv(
+    _csv_patterns_train,
+    str(DATA_ROOT / "Training_GroundTruth" / "ISIC2018_Task3_Training_GroundTruth.csv")
+)
+PATH_VAL_CSV = _auto_detect_csv(
+    _csv_patterns_val,
+    str(DATA_ROOT / "Validation_GroundTruth" / "ISIC2018_Task3_Validation_GroundTruth.csv")
+)
+PATH_TEST_CSV = _auto_detect_csv(
+    _csv_patterns_test,
+    str(DATA_ROOT / "Test_GroundTruth" / "ISIC2018_Task3_Test_GroundTruth.csv")
+)
+
+DIR_TRAIN_IMG = _auto_detect_img_dir(_img_dir_patterns_train, str(DATA_ROOT / "Training_Input"))
+DIR_VAL_IMG = _auto_detect_img_dir(_img_dir_patterns_val, str(DATA_ROOT / "Validation_Input"))
+DIR_TEST_IMG = _auto_detect_img_dir(_img_dir_patterns_test, str(DATA_ROOT / "Test_Input"))
 
 # Lesion groupings (optional)
-PATH_LESION_GROUPINGS = r"D:\ISIC2018\Training_LesionGroupings.csv"
+PATH_LESION_GROUPINGS = find_file(REPO_ROOT, ["*Lesion*Groupings*.csv"])
+if PATH_LESION_GROUPINGS:
+    PATH_LESION_GROUPINGS = str(PATH_LESION_GROUPINGS)
 
 
 # ========================
 # OUTPUT PATHS
 # ========================
-DIR_OUTPUT = "outputs"
+DIR_OUTPUT = str(REPO_ROOT / "outputs")
 DIR_MODELS = os.path.join(DIR_OUTPUT, "models")
 DIR_SUBMISSIONS = os.path.join(DIR_OUTPUT, "submissions")
 DIR_FIGURES = os.path.join(DIR_OUTPUT, "figures")
@@ -131,6 +216,14 @@ def print_config():
     print(f"Weight Decay: {WEIGHT_DECAY}")
     print(f"Number of Epochs: {NUM_EPOCHS}")
     print(f"Early Stop Patience: {EARLY_STOP_PATIENCE}")
+    print(f"\nREPO_ROOT: {REPO_ROOT}")
+    print(f"DATA_ROOT: {DATA_ROOT}")
+    print(f"\nTrain CSV: {PATH_TRAIN_CSV}")
+    print(f"Val CSV: {PATH_VAL_CSV}")
+    print(f"Test CSV: {PATH_TEST_CSV}")
+    print(f"\nTrain Images: {DIR_TRAIN_IMG}")
+    print(f"Val Images: {DIR_VAL_IMG}")
+    print(f"Test Images: {DIR_TEST_IMG}")
     print(f"\nModel Path: {MODEL_PATH}")
     print("=" * 60)
 
