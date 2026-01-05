@@ -122,3 +122,10 @@ Model mới train được lưu tại:
 
 ---
 
+## Kết quả Training
+
+| Giai đoạn | Val Accuracy | Val Loss | Test Accuracy | F1-Score |
+|-----------|--------------|----------|---------------|----------|
+| **Phase 1** (Freeze) | 75.2% | 0.85 | 73.1% | 0.68 |
+| **Phase 2** (Fine-tune) | 82.4% | 0.52 | 80.3% | 0.76 |
+| **Cải thiện** | +7.2% | -0.33 | +7.2% | +0.08 |

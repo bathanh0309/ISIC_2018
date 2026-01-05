@@ -54,50 +54,35 @@ def set_seed(seed=SEED):
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-# ========================
 # MODEL CONFIGURATION
-# ========================
 MODEL_NAME = 'efficientnet_b1'
 IMG_SIZE = 224
 NUM_CLASSES = 7  # ISIC 2018 has 7 disease categories
-
 # ImageNet normalization
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
-
-
-# ========================
-# TRAINING HYPERPARAMETERS
-# ========================
 # Transfer Learning
 FREEZE_BACKBONE = True  # If True, freeze backbone and only train classifier (faster)
                         # If False, train entire model (better accuracy but slower)
-
 # Optimizer
 LEARNING_RATE = 1e-3 if FREEZE_BACKBONE else 1e-4  # Higher LR for classifier-only training
 WEIGHT_DECAY = 1e-3  # Increased to reduce overfitting
-
 # Dropout
 DROP_RATE = 0.3       # Dropout rate for classifier 
 DROP_PATH_RATE = 0.2  # Stochastic depth rate
-
 # Training
 NUM_EPOCHS = 10       # Number of epochs to train
 BATCH_SIZE = 32 if torch.cuda.is_available() else 16
 NUM_WORKERS = 2 if IN_COLAB else 0  # Use 2 workers on Colab
 VAL_EVERY_N_EPOCHS = 1
-
 # Loss function
 USE_LABEL_SMOOTHING = True
 LABEL_SMOOTHING = 0.1
-
 # Test-Time Augmentation (TTA)
 USE_TTA_VALIDATION = False
 USE_TTA_TEST = True
-
 # Learning rate scheduler
 USE_COSINE_SCHEDULER = True
-
 # Early stopping
 EARLY_STOP_PATIENCE = 5
 MONITOR_METRIC = 'val_f1'

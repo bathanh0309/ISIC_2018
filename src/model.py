@@ -12,20 +12,7 @@ from typing import Dict, Tuple, Optional
 def build_model(num_classes: int = 7, pretrained: bool = True, model_name: str = 'efficientnet_b1',
                 drop_rate: float = 0.3, drop_path_rate: float = 0.2,
                 freeze_backbone: bool = False) -> nn.Module:
-    """
-    Build EfficientNet model with optional frozen backbone for transfer learning.
-    
-    Args:
-        num_classes: Number of output classes (7 for ISIC 2018)
-        pretrained: Load ImageNet pretrained weights
-        model_name: Model architecture name
-        drop_rate: Dropout rate for classifier
-        drop_path_rate: Stochastic depth rate
-        freeze_backbone: If True, freeze all layers except classifier (transfer learning)
-    
-    Returns:
-        PyTorch model
-    """
+
     # Create model with pretrained weights
     model = timm.create_model(
         model_name, 
@@ -44,10 +31,6 @@ def build_model(num_classes: int = 7, pretrained: bool = True, model_name: str =
 
 
 def freeze_backbone_layers(model: nn.Module) -> None:
-    """
-    Freeze all layers except the classifier head.
-    For EfficientNet, this freezes 'features' and only trains 'classifier'.
-    """
     # Freeze all parameters first
     for param in model.parameters():
         param.requires_grad = False
@@ -70,15 +53,7 @@ def freeze_backbone_layers(model: nn.Module) -> None:
             params[-1].requires_grad = True
             params[-2].requires_grad = True  # bias and weight
 
-
 def unfreeze_backbone_layers(model: nn.Module, num_layers: int = -1) -> None:
-    """
-    Unfreeze backbone layers for fine-tuning.
-    
-    Args:
-        model: The model to unfreeze
-        num_layers: Number of layers to unfreeze from the end. -1 = unfreeze all.
-    """
     if num_layers == -1:
         # Unfreeze all layers
         for param in model.parameters():
@@ -93,12 +68,7 @@ def unfreeze_backbone_layers(model: nn.Module, num_layers: int = -1) -> None:
 
 
 def get_trainable_params(model: nn.Module) -> Tuple[int, int]:
-    """
-    Get count of trainable and total parameters.
-    
-    Returns:
-        Tuple of (total_params, trainable_params)
-    """
+
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     return total_params, trainable_params
@@ -111,18 +81,7 @@ def count_parameters(model: nn.Module) -> Tuple[int, int]:
 
 def load_checkpoint(model: nn.Module, optimizer: Optional[torch.optim.Optimizer], 
                     checkpoint_path: str, device: torch.device) -> Dict:
-    """
-    Load model checkpoint.
-    
-    Args:
-        model: Model to load weights into
-        optimizer: Optimizer to load state (optional)
-        checkpoint_path: Path to checkpoint file
-        device: Device to load weights to
-    
-    Returns:
-        Checkpoint dictionary
-    """
+
     print(f"Loading checkpoint from: {checkpoint_path}")
     # weights_only=False is needed for PyTorch 2.6+ because checkpoint contains
     # numpy arrays in history dict. This is safe since we created the checkpoint ourselves.
