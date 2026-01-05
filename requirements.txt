@@ -1,14 +1,22 @@
-numpy
-pandas
-matplotlib
-seaborn
-scikit-learn
-torch
-torchvision
-torchaudio
-tqdm
-pillow
-opencv-python
-jupyter
-jupyterlab
-timm
+# Requirements for ISIC 2018 - Google Colab
+# Most packages are pre-installed on Colab, but these ensure compatibility
+
+# Core Deep Learning
+torch>=2.0.0
+torchvision>=0.15.0
+timm>=0.9.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+Pillow>=9.5.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Machine Learning
+scikit-learn>=1.2.0
+
+# Progress Bar
+tqdm>=4.65.0

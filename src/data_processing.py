@@ -124,8 +124,8 @@ def load_all_data(train_csv: str, val_csv: str, test_csv: str,
 
 if __name__ == "__main__":
     # Test data loading
-    from .config import PATH_TRAIN_CSV, PATH_VAL_CSV, PATH_TEST_CSV
-    from .config import DIR_TRAIN_IMG, DIR_VAL_IMG, DIR_TEST_IMG
+    from config import PATH_TRAIN_CSV, PATH_VAL_CSV, PATH_TEST_CSV
+    from config import DIR_TRAIN_IMG, DIR_VAL_IMG, DIR_TEST_IMG
     
     df_train, df_val, df_test, label2idx, idx2label, num_classes, use_weighted = load_all_data(
         PATH_TRAIN_CSV, PATH_VAL_CSV, PATH_TEST_CSV,

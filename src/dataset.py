@@ -38,8 +38,8 @@ class ISICDataset(Dataset):
 if __name__ == "__main__":
     # Test dataset creation
     import pandas as pd
-    from .transforms import get_train_transform, get_val_transform
-    from .config import DIR_TRAIN_IMG
+    from transforms import get_train_transform, get_val_transform
+    from config import DIR_TRAIN_IMG
     
     # Create dummy dataframe
     dummy_df = pd.DataFrame({

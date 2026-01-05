@@ -211,8 +211,8 @@ def visualize_predictions(model: nn.Module, image_paths: List[Tuple[str, str]],
 
 
 if __name__ == "__main__":
-    from .config import DEVICE, NUM_CLASSES
-    from .model import build_model
+    from config import DEVICE, NUM_CLASSES
+    from model import build_model
     
     # Test evaluation utilities
     model = build_model(num_classes=NUM_CLASSES)

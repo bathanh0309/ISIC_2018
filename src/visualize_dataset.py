@@ -172,9 +172,9 @@ def plot_class_distribution_comparison(df_train, df_val, df_test, save_path=None
 
 if __name__ == "__main__":
     # Test visualization
-    from .config import PATH_TRAIN_CSV, PATH_VAL_CSV, PATH_TEST_CSV
-    from .config import DIR_TRAIN_IMG, DIR_VAL_IMG, DIR_TEST_IMG, DIR_FIGURES
-    from .data_processing import load_all_data
+    from config import PATH_TRAIN_CSV, PATH_VAL_CSV, PATH_TEST_CSV
+    from config import DIR_TRAIN_IMG, DIR_VAL_IMG, DIR_TEST_IMG, DIR_FIGURES
+    from data_processing import load_all_data
     
     print("Loading data...")
     df_train, df_val, df_test, label2idx, idx2label, num_classes, use_weighted = load_all_data(

@@ -1,6 +1,6 @@
 
 import torchvision.transforms as T
-from .config import IMG_SIZE, IMAGENET_MEAN, IMAGENET_STD
+from config import IMG_SIZE, IMAGENET_MEAN, IMAGENET_STD
 
 
 def get_train_transform():

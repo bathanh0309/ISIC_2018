@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 from tqdm.auto import tqdm
 from sklearn.metrics import accuracy_score
-from .model import save_checkpoint
-from .evaluate import evaluate
+from model import save_checkpoint
+from evaluate import evaluate
 
 def train_model(model, train_loader, val_loader, criterion, optimizer, scheduler, 
                 num_epochs, device, config_dict, start_epoch=0, best_val_f1=0.0, 

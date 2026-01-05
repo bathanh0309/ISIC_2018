@@ -59,13 +59,24 @@ def create_weighted_sampler(df, label_col: str = 'label_idx'):
 
 
 def get_optimizer(model: nn.Module, lr: float = 3e-4, weight_decay: float = 1e-4) -> torch.optim.Optimizer:
-
+    """
+    Create AdamW optimizer for trainable parameters only.
+    This supports transfer learning where backbone is frozen.
+    """
+    # Only optimize parameters that require gradients (trainable params)
+    trainable_params = [p for p in model.parameters() if p.requires_grad]
+    
     optimizer = torch.optim.AdamW(
-        model.parameters(),
+        trainable_params,
         lr=lr,
         weight_decay=weight_decay
     )
+    
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_count = sum(p.numel() for p in trainable_params)
+    
     print(f"Optimizer: AdamW (lr={lr}, weight_decay={weight_decay})")
+    print(f"  Optimizing {trainable_count:,} / {total_params:,} parameters ({100*trainable_count/total_params:.1f}%)")
     return optimizer
 
 
@@ -149,8 +160,8 @@ def create_dataloaders(df_train, df_val, df_test, train_dataset, val_dataset, te
 
 
 if __name__ == "__main__":
-    from .config import DEVICE, LEARNING_RATE, WEIGHT_DECAY, NUM_EPOCHS
-    from .model import build_model
+    from config import DEVICE, LEARNING_RATE, WEIGHT_DECAY, NUM_EPOCHS
+    from model import build_model
     
     # Test training utilities
     model = build_model(num_classes=7)
