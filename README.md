@@ -27,6 +27,18 @@ ISIC2018/
 └── README.md              # Documentation
 ```
 
+
+---
+
+## Model Architecture
+
+**EfficientNet-B1**
+- **Input size**: 224×224 pixels
+- **Parameters**: ~6.5M (trainable)
+- **Pretrained**: ImageNet weights
+- **Output**: 7 classes (skin lesion types)
+
+---
 ## Dataset Overview
 
 ![Dataset Overview](outputs/figures/dataset_overview.png)
@@ -57,11 +69,24 @@ ISIC2018/
 - **AdamW Optimizer**: Weight decay = 1e-3 để regularization
 - **Dropout (0.3) + Drop Path (0.2)**: Chống overfitting
 - **WeightedRandomSampler**: Cân bằng class imbalance (ratio ~58:1)
+  > Dataset ISIC 2018 rất mất cân bằng: class NV chiếm 67% trong khi DF chỉ 1.1%. WeightedRandomSampler sample các class ít mẫu nhiều hơn, giúp model học đều các loại tổn thương da thay vì bias về class phổ biến.
 - **Cosine LR Scheduler**: Giảm LR mượt theo epoch
 - **TTA (Test-Time Augmentation)**: Tăng accuracy khi inference
 
 ---
+## Training Configuration
 
+| Parameter | Value | Mô tả |
+|-----------|-------|-------|
+| **Loss Function** | CrossEntropyLoss | With Label Smoothing (0.1) |
+| **Optimizer** | AdamW | Weight Decay (1e-3) |
+| **Learning Rate** | 1e-4 | 0.0001 initial LR |
+| **Dropout** | 0.3 | Dropout rate for classifier head |
+| **Drop Path** | 0.2 | Stochastic depth rate |
+| **Data Augmentation** | Resize, Crop, Flip, Rotation, ColorJitter, RandomErasing | Thêm data  |
+| **Class Imbalance** | WeightedRandomSampler | Cân bằng tỉ lệ các class (ratio ~58:1) |
+
+---
 ## Training Outputs
 
 Model mới train được lưu tại:
@@ -79,6 +104,10 @@ Model mới train được lưu tại:
 
 ![Validation Confusion Matrix](outputs/figures/val_confusion_matrix.png)
 
+### Confusion Matrix - Test Set
+
+![Test Confusion Matrix](outputs/figures/test_confusion_matrix.png)
+
 ---
 
 ## Dự đoán (Inference)
@@ -93,27 +122,3 @@ Model mới train được lưu tại:
 
 ---
 
-## Training Configuration
-
-| Parameter | Value | Mô tả |
-|-----------|-------|-------|
-| **Loss Function** | CrossEntropyLoss | With Label Smoothing (0.1) |
-| **Optimizer** | AdamW | Weight Decay (1e-3) |
-| **Learning Rate** | 1e-4 | 0.0001 initial LR |
-| **Dropout** | 0.3 | Dropout rate for classifier head |
-| **Drop Path** | 0.2 | Stochastic depth rate |
-| **Data Augmentation** | Resize, Crop, Flip, Rotation, ColorJitter, RandomErasing | Thêm data  |
-| **Class Imbalance** | WeightedRandomSampler | Cân bằng tỉ lệ các class (ratio ~58:1) |
-
-
----
-
-## Model Architecture
-
-**EfficientNet-B1**
-- **Input size**: 224×224 pixels
-- **Parameters**: ~6.5M (trainable)
-- **Pretrained**: ImageNet weights
-- **Output**: 7 classes (skin lesion types)
-
----
